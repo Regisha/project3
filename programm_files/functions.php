@@ -1,0 +1,338 @@
+<?php
+	if (!defined('ABSOLUTE__PATH__'))
+	{
+	header('Location: 404.php');
+	exit;
+	}
+	
+function repl_txt_sms ($txt)
+{
+	$txt = trim($txt);
+	$txt = str_replace("\r\n", "", $txt);
+	$txt = str_replace("№", "N", $txt);
+	$txt = str_replace("ё", "$", $txt);
+	$txt = str_replace("Ё", "$", $txt);
+	$txt = str_replace("~", "$", $txt);
+
+	return $txt;
+}
+
+    function privet()
+    {
+       $h = date("H");
+       // от 5-и до 11-и утра, return возвращает Доброе утро
+       if ($h>=5 && $h<=11)  return "Доброе утро!  ";
+       // от 12-и до 16-и Здравствуйте
+       if ($h>=12 && $h<=16) return "Добрый день! ";
+       // от 17-и до 24-х часов Добрый вечер
+       if ($h>=17 && $h<=24) return "Добрый вечер! ";
+       // от 0 до 4-х утра Доброй ночи.
+       if ($h>=0 && $h<=4)   return "Доброй ночи!  ";
+    }
+function curentDay ($mktime)
+{
+	$mounts = array ('01' => 'января','02' => 'февраля','03' => 'марта','04' => 'апреля','05' => 'мая','06' => 'июня','07' => 'июля','08' => 'августа','09' => 'сентября','10' => 'октября','11' => 'ноября','12' => 'декабря');
+
+	if (!is_numeric($mktime))
+	{
+	$mktime = time();
+	}
+
+	if (date("Y-m-d",$mktime) == date("Y-m-d",time()))
+	{
+	$return = 'Сегодня';
+	}
+	elseif (date("Y-m-d",$mktime) == date("Y-m-d",(time()-86400)))
+	{
+	$return = 'Вчера';
+	}
+	else
+		{
+		$return = date("d",$mktime).' '.$mounts[date("m",$mktime)];
+		}
+	return $return;
+}
+
+function filesize_get($filesize)
+{
+   // Если размер переданного в функцию файла больше 1кб
+   if($filesize > 1024)
+   {
+       $filesize = ($filesize/1024);
+       // если размер файла больше одного килобайта
+       // пересчитываем в мегабайтах
+       if($filesize > 1024)
+       {
+            $filesize = ($filesize/1024);
+           // если размер файла больше одного мегабайта
+           // пересчитываем в гигабайтах
+           if($filesize > 1024)
+           {
+               $filesize = ($filesize/1024);
+               $filesize = round($filesize, 1);
+               return $filesize." ГБ";
+
+           }
+           else
+           {
+               $filesize = round($filesize, 1);
+               return $filesize." MБ";
+           }
+
+       }
+       else
+       {
+           $filesize = round($filesize, 1);
+           return $filesize." Кб";
+       }
+
+   }
+   else
+   {
+       $filesize = round($filesize, 1);
+       return $filesize." байт";
+   }
+
+}
+
+function summa_replace ($sum)
+{
+	$sum = preg_replace ("/[^0-9.,]/","",$sum);
+	return str_replace(',','.',$sum);
+}
+
+function getExtension1($filename) 
+{
+$e = explode(".", $filename);
+return end($e);
+}
+		function downcounter($date,$time){
+		    $time = $time >= time() ? time() : ($time <= $date?time():$time);
+		    $check_time = strtotime($date) - $time;
+		    if($check_time <= 0){
+		        return '-';
+		    }
+
+		    $days = floor($check_time/86400);
+		    $hours = floor(($check_time%86400)/3600);
+		    $minutes = floor(($check_time%3600)/60);
+		    //$seconds = $check_time%60; 
+
+		    $str = '';
+		    if($days > 0) $str .= declension($days,array('день','дня','дней')).' ';
+		    if($hours > 0) $str .= declension($hours,array('час','часа','часов')).' ';
+		    if($minutes > 0) $str .= declension($minutes,array('минута','минуты','минут')).' ';
+		    //if($seconds > 0) $str .= declension($seconds,array('секунда','секунды','секунд'));
+
+		    return !empty($str)?$str:'-';
+		}
+
+		function declension($digit,$expr,$onlyword=false){
+		    if(!is_array($expr)) $expr = array_filter(explode(' ', $expr));
+		    if(empty($expr[2])) $expr[2]=$expr[1];
+		    $i=preg_replace('/[^0-9]+/s','',$digit)%100;
+		    if($onlyword) $digit='';
+		    if($i>=5 && $i<=20) $res=$digit.' '.$expr[2];
+		    else
+		    {
+		        $i%=10;
+		        if($i==1) $res=$digit.' '.$expr[0];
+		        elseif($i>=2 && $i<=4) $res=$digit.' '.$expr[1];
+		        else $res=$digit.' '.$expr[2];
+		    }
+		    return trim($res);
+		}
+function translit ($t)
+{
+	$t = trim($t);
+	$t = mb_strtolower($t,'UTF-8');
+	$t = str_replace('  ','_',$t);
+	$t = str_replace(' ','_',$t);
+	$t = str_replace('-','_',$t);
+
+	$t = str_replace('а','a',$t);
+	$t = str_replace('б','b',$t);
+	$t = str_replace('в','v',$t);
+	$t = str_replace('г','g',$t);
+	$t = str_replace('д','d',$t);
+	$t = str_replace('е','e',$t);
+	$t = str_replace('ё','e',$t);
+	$t = str_replace('ж','j',$t);
+	$t = str_replace('з','z',$t);
+	$t = str_replace('и','i',$t);
+	$t = str_replace('й','y',$t);
+	$t = str_replace('к','k',$t);
+	$t = str_replace('л','l',$t);
+	$t = str_replace('м','m',$t);
+	$t = str_replace('н','n',$t);
+	$t = str_replace('о','o',$t);
+	$t = str_replace('п','p',$t);
+	$t = str_replace('р','r',$t);
+	$t = str_replace('с','s',$t);
+	$t = str_replace('т','t',$t);
+	$t = str_replace('у','u',$t);
+	$t = str_replace('ф','f',$t);
+	$t = str_replace('х','h',$t);
+	$t = str_replace('ц','c',$t);
+	$t = str_replace('ч','ch',$t);
+	$t = str_replace('ш','sh',$t);
+	$t = str_replace('щ','shch',$t);
+	$t = str_replace('ъ','',$t);
+	$t = str_replace('ы','y',$t);
+	$t = str_replace('ь','',$t);
+	$t = str_replace('э','e',$t);
+	$t = str_replace('ю','yu',$t);
+	$t = str_replace('я','ya',$t);
+
+	$t = preg_replace('/[^0-9a-zA-Z_]/', '', $t);
+	$t = trim($t);
+	return $t;
+}
+
+function get_database_tables($mysql)
+{
+	$ret = array();
+	$r = mysqli_query($mysql,"SHOW TABLES");
+	if (mysqli_num_rows($r)>0)
+	{
+		while($row = mysqli_fetch_array($r, MYSQL_NUM))
+		{
+			$ret[] = $row[0];
+		}
+	}
+	return $ret;
+}
+
+
+
+function repl_str ($str)
+{
+	$str = trim($str);
+	$str = str_replace('|','',$str);
+	$str = str_replace('\\','',$str);
+	$str = htmlspecialchars($str, ENT_QUOTES, "utf-8");
+	return $str;
+}
+function clearTXT ($text)
+{
+	$text = trim($text);
+	$text = preg_replace('/<img.*?src="(.*?)".*?>/im','<img src="$1" class="img-responsive" />',$text);
+	$text = preg_replace('~<script[^>]*>.*?</script>~si', '', $text);
+	$text = strip_tags($text, '<table><tr><th><td><img><br><p><ul><li>');
+	$f = preg_replace("'<table[^>]*?>'si", '<table class="table marktab">', $text);
+	/*$f = preg_replace("'<tr[^>]*?>'si", '<tr>', $f);
+	$f = preg_replace("'<th[^>]*?>'si", '<th>', $f);
+	$f = preg_replace("'<td[^>]*?>'si", '<td>', $f);*/
+	$f = preg_replace("'<p[^>]*?>'si", '<p>', $f);
+	$f = preg_replace("'<ul[^>]*?>'si", '<ul>', $f);
+	$f = preg_replace("'<li[^>]*?>'si", '<li>', $f);
+	$f = str_replace('\"', '"', $f);
+	return $f;
+}
+function GetNav($p, $num_pages){
+
+	if (isset($_GET['page']) and $_GET['page'] == 'zakaz')
+	{
+	$sost_sort = isset($_GET['sost_sort'])?'&sost_sort='.$_GET['sost_sort']:'';
+	$fulllink = '?page=zakaz'.$sost_sort;
+	$and = '&p=';
+	}
+	else
+		{
+		$fulllink = '';
+		$and = '';
+		}
+  if($p > 3){
+    $first_page = ' <div class="btn-group"><a class="btn btn-default" href="'.$fulllink.$and.'1"><span>1</span></a></div> ';
+  }
+  else{
+    $first_page = '';
+  }
+  if($p < ($num_pages - 2)){
+    $last_page = ' <div class="btn-group"><a class="btn btn-default" href="'.$fulllink.$and.$num_pages.'"> <span>'.$num_pages.'</span></a></div> ';
+  }
+  else{
+    $last_page = '';
+  }
+  if($p > 1){
+    $prev_page = ' <div class="btn-group"><a class="btn btn-default" href="'.$fulllink.$and.($p - 1).'"> <span> < </span></a></div> ';
+  }
+  else{
+    $prev_page = '';
+  }
+  if($p < $num_pages){
+    $next_page = ' <div class="btn-group"><a class="btn btn-default" href="'.$fulllink.$and.($p + 1).'"> <span>Следующая &rarr; </span></a></div> ';
+  }
+  else{
+    $next_page = '';
+  }
+  if($p - 2 > 0){
+    $prev_2_page = ' <div class="btn-group"><a class="btn btn-default" href="'.$fulllink.$and.($p - 2).'"><span>'.($p - 2).'</span></a></div> ';
+  }
+  else{
+    $prev_2_page = '';
+  }
+  if($p - 1 > 0){
+    $prev_1_page = ' <div class="btn-group"><a class="btn btn-default" href="'.$fulllink.$and.($p - 1).'"><span>'.($p - 1).'</span></a></div> ';
+  }
+  else{
+    $prev_1_page = '';
+  }
+  if($p + 2 <= $num_pages){
+    $next_2_page = ' <div class="btn-group"><a class="btn btn-default" href="'.$fulllink.$and.($p + 2).'"><span>'.($p + 2).'</span></a></div> ';
+  }
+  else{
+    $next_2_page = '';
+  }
+  if($p + 1 <= $num_pages){
+    $next_1_page = ' <div class="btn-group"><a class="btn btn-default" href="'.$fulllink.$and.($p + 1).'"><span>'.($p + 1).'</span></a></div> ';
+  }
+  else{
+    $next_1_page = '';
+  }
+  
+  $nav = "<div class='btn-toolbar' role='toolbar'><div class='btn-group'><a class='btn btn-default' href='#'>&uarr;</a></div>".$first_page.$prev_2_page.$prev_1_page."<div class='btn-group btn btn-default active'><span>".$p."</span></div>".$next_1_page.$next_2_page.$next_page."</div>";
+
+  return $nav;
+}
+
+    function dateInterval ($start, $end = '')
+    {
+        $start = strtotime($start); 
+        $end   = empty($end) ? time() : strtotime($end);
+      
+        for($d = $start; $d <= $end ; $d = strtotime('tomorrow', $d)) 
+            $interval[date('j.m.Y', $d)] = date('j.m.Y', $d);
+        
+        return isset($interval)?$interval:false;
+    }
+    
+function send_request($url)  
+{  
+    $host = parse_url ($url);
+    $headers = array(  
+    "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1",  
+    "Accept: */*",  
+    "Accept-Language: en-US,en;q=0.8,ru;q=0.6",  
+    "Accept-Encoding: gzip, deflate,sdch", 
+    "Host: ".$host['host']."",
+    "Referer: $url",      
+    "Connection: keep-alive",  
+    );    
+ 
+    $ch = curl_init($url);  
+    curl_setopt_array($ch, array(  
+        CURLOPT_HEADER => 0,  
+        CURLOPT_HTTPHEADER => $headers,  
+        CURLOPT_RETURNTRANSFER => true,  
+        CURLOPT_VERBOSE => true,  
+        CURLOPT_ENCODING => "gzip",
+        CURLOPT_COOKIESESSION => true,
+        CURLOPT_COOKIEJAR => ABSOLUTE__PATH__.'/programm_files/cookie_rich.txt',
+        CURLOPT_COOKIEFILE => ABSOLUTE__PATH__.'/programm_files/cookie_rich.txt'
+    ));
+    $output = curl_exec($ch);  
+    curl_close($ch);  
+    return $output;  
+}    
+?>
